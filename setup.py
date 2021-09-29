@@ -1,21 +1,43 @@
-"""
-    Setup file for numba4jax.
-    Use setup.cfg to configure your project.
+from setuptools import setup, find_packages
 
-    This file was generated with PyScaffold 4.0.2.
-    PyScaffold helps you to put up the scaffold of your new Python project.
-    Learn more under: https://pyscaffold.org/
-"""
-from setuptools import setup
+BASE_DEPENDENCIES = [
+    "numpy~=1.18",
+    "numba>=0.52, <0.55",
+    "cffi>=1.12",
+    "jax>0.2.16, <0.2.21",
+    "jaxlib>=0.1.69",
+]
 
-if __name__ == "__main__":
-    try:
-        setup(use_scm_version={"version_scheme": "no-guess-dev"})
-    except:  # noqa
-        print(
-            "\n\nAn error occurred while building the project, "
-            "please ensure you have the most updated version of setuptools, "
-            "setuptools_scm and wheel with:\n"
-            "   pip install -U setuptools setuptools_scm wheel\n\n"
-        )
-        raise
+DEV_DEPENDENCIES = [
+    "pytest>=6",
+    "pytest-xdist>=2",
+    "coverage>=5",
+    "pytest-cov>=2.10.1",
+    "networkx~=2.4",
+    "flaky>=3.7",
+    "pre-commit",
+    "black==21.6b0",
+    "flakehell>=0.9",
+]
+
+setup(
+    name="numba4jax",
+    author="Filippo Vicentini",
+    url="http://github.com/PhilipVinc/numba4jax",
+    author_email="filippovicentini@gmail.com",
+    license="MIT",
+    summmary="Usa numba in jax-compiled kernels.",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: Unix",
+    ],
+    packages=find_packages(),
+    install_requires=BASE_DEPENDENCIES,
+    python_requires=">=3.7",
+    extras_require={"dev": DEV_DEPENDENCIES},
+)

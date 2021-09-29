@@ -21,7 +21,10 @@ __pycache__/*
 .settings
 .idea
 .vscode
+.envrc
 tags
+numba4jax/_version.py
+
 
 # Package files
 *.egg
