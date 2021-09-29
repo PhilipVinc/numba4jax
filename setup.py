@@ -26,7 +26,7 @@ setup(
     url="http://github.com/PhilipVinc/numba4jax",
     author_email="filippovicentini@gmail.com",
     license="MIT",
-    summmary="Usa numba in jax-compiled kernels.",
+    description="Usa numba in jax-compiled kernels.",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 5 - Production/Stable",
