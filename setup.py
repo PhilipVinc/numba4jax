@@ -4,7 +4,7 @@ BASE_DEPENDENCIES = [
     "numpy~=1.18",
     "numba>=0.52, <0.56",
     "cffi>=1.12",
-    "jax>0.2.16, <0.3",
+    "jax>0.2.16, <0.4",
     "jaxlib>=0.1.69",
 ]
 
