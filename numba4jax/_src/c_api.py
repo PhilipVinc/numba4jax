@@ -38,12 +38,6 @@ def pycapsule_new(ptr, name, destructor=None) -> ctypes.py_object:
     return ctypes.pythonapi.PyCapsule_New(ptr, name, None)
 
 
-# Find the dynamic linker library path
-libdl_path = ctypes.util.find_library("dl")
-# Load the dynamic linker dynamically
-libdl = ctypes.CDLL(libdl_path)
-
-
 class Dl_info(ctypes.Structure):
     """
     Structure of the Dl_info returned by the CFFI of dl.dladdr
@@ -57,14 +51,27 @@ class Dl_info(ctypes.Structure):
     )
 
 
-# Define dladdr to get the pointer to a symbol in a shared
-# library already loaded.
-# https://man7.org/linux/man-pages/man3/dladdr.3.html
-libdl.dladdr.argtypes = (ctypes.c_void_p, ctypes.POINTER(Dl_info))
-# restype is None as it returns by reference
+# Find the dynamic linker library path
+libdl_path = ctypes.util.find_library("dl")
+if libdl_path:
+    # Load the dynamic linker dynamically
+    libdl = ctypes.CDLL(libdl_path)
+
+    # Define dladdr to get the pointer to a symbol in a shared
+    # library already loaded.
+    # https://man7.org/linux/man-pages/man3/dladdr.3.html
+    libdl.dladdr.argtypes = (ctypes.c_void_p, ctypes.POINTER(Dl_info))
+    # restype is None as it returns by reference
+else:
+    # On Windows it is nontrivial to have libdl, so we disable everything about
+    # it and use other ways to find paths of libraries
+    libdl = None
 
 
 def find_path_of_symbol_in_library(symbol):
+    if libdl is None:
+        raise ValueError("libdl not found.")
+
     info = Dl_info()
 
     result = libdl.dladdr(symbol, ctypes.byref(info))
@@ -73,4 +80,3 @@ def find_path_of_symbol_in_library(symbol):
         return info.dli_fname.decode(sys.getfilesystemencoding())
     else:
         raise ValueError("Cannot determine path of Library.")
-        libdl_path = "Not Found"
