@@ -10,9 +10,11 @@ try:
 
     if sys.platform == "win32":
         import ctypes.util
+
         libcuda_path = ctypes.util.find_library(_libcuda._name)
     else:
         from numba4jax._src.c_api import find_path_of_symbol_in_library
+
         libcuda_path = find_path_of_symbol_in_library(_libcuda.cuMemcpy)
 
     numba_cffi_loaded = True
