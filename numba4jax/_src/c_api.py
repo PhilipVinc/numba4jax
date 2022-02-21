@@ -51,7 +51,7 @@ class Dl_info(ctypes.Structure):
     )
 
 
-# Find the dynamic linker library path
+# Find the dynamic linker library path. Only works on unix-like os
 libdl_path = ctypes.util.find_library("dl")
 if libdl_path:
     # Load the dynamic linker dynamically
