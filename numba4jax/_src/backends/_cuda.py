@@ -1,17 +1,24 @@
+import sys
+
 from numba import cuda as ncuda
 from cffi import FFI
 
 from numba import types as nb_types
 
-from numba4jax._src.c_api import find_path_of_symbol_in_library
-
 try:
     _libcuda = ncuda.driver.find_driver()
 
-    libcuda_path = find_path_of_symbol_in_library(_libcuda.cuMemcpy)
+    if sys.platform == "win32":
+        import ctypes.util
+
+        libcuda_path = ctypes.util.find_library(_libcuda._name)
+    else:
+        from numba4jax._src.c_api import find_path_of_symbol_in_library
+
+        libcuda_path = find_path_of_symbol_in_library(_libcuda.cuMemcpy)
 
     numba_cffi_loaded = True
-except:
+except ValueError:
     numba_cffi_loaded = False
 
 if numba_cffi_loaded:
