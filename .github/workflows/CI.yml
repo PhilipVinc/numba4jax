@@ -16,11 +16,11 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: "3.8"
-            oldest_deps: false
+            oldest_deps: true
 
           - os: macos-latest
             python-version: "3.9"
-            oldest_deps: true
+            oldest_deps: false
 
           - os: windows-latest
             python-version: "3.10"
