@@ -38,7 +38,7 @@ jobs:
 
       - name: Install numba4jax
         run: |
-          pip install -e .
+          pip install -e .[dev]
 
       - name: Numba4jax tests
         run: |
