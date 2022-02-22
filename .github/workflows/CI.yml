@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python-version: "3.8"
+            python-version: "3.7"
             oldest_deps: true
 
           - os: macos-latest
