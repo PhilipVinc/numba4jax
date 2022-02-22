@@ -16,12 +16,15 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: "3.8"
+            oldest_deps: false
 
           - os: macos-latest
             python-version: "3.9"
+            oldest_deps: true
 
           - os: windows-latest
             python-version: "3.10"
+            oldest_deps: false
 
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +33,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Pip install oldest dependencies
+        if: matrix.oldest_deps
+        run: |
+          python conf/compute_oldest_dependencies.py
+          pip install -r oldest_requirements.txt
 
       - name: Install jaxlib for Windows
         if: matrix.os == 'windows-latest'
