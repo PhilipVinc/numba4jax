@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: "3.7"
+            oldest_deps: true
+
+          - os: macos-latest
+            python-version: "3.9"
+            oldest_deps: false
+
+          - os: windows-latest
+            python-version: "3.10"
+            oldest_deps: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip and install wheel
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+
+      - name: Pip install oldest dependencies
+        if: matrix.oldest_deps
+        run: |
+          python conf/compute_oldest_dependencies.py
+          pip install -r oldest_requirements.txt
+
+      - name: Install jaxlib for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          pip install jaxlib -f https://whls.blob.core.windows.net/unstable/index.html
+
+      - name: Install numba4jax
+        run: |
+          pip install -e .[dev]
+
+      - name: Numba4jax tests
+        run: |
+          pytest --cov=numba4jax --cov-append tests
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1

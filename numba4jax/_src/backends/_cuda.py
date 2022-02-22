@@ -18,7 +18,7 @@ try:
         libcuda_path = find_path_of_symbol_in_library(_libcuda.cuMemcpy)
 
     numba_cffi_loaded = True
-except ValueError:
+except Exception:
     numba_cffi_loaded = False
 
 if numba_cffi_loaded:
