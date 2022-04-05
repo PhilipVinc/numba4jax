@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 BASE_DEPENDENCIES = [
     "numpy~=1.18",
-    "numba>=0.52, <0.56",
+    "numba>=0.52, <0.57",
     "cffi>=1.12",
     "jax>=0.2.17, <0.4",
     "jaxlib>=0.1.69",
