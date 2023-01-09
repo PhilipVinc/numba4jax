@@ -13,7 +13,7 @@ DEV_DEPENDENCIES = [
     "pytest-xdist>=2",
     "coverage>=5",
     "pytest-cov>=2.10.1",
-    "networkx~=2.4",
+    "networkx>=2.4,<4.0",
     "flaky>=3.7",
     "pre-commit",
     "black==21.6b0",
