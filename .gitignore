@@ -54,3 +54,5 @@ MANIFEST
 # Per-project virtualenvs
 .venv*/
 .conda*/
+
+oldest_requirements.txt
