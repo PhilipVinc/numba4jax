@@ -39,7 +39,6 @@ dev = [
     "pytest>=6",
     "coverage>=5",
     "pytest-cov>=2.10.1",
-    "networkx~=2.4",
     "flaky>=3.7",
     "pre-commit",
     "black==22.10.0",
