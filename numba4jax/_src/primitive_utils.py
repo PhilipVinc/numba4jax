@@ -161,6 +161,7 @@ def njit4jax(output_shapes):
     if callable(output_shapes):
         abstract_eval = output_shapes
     else:
+
         def abstract_eval(*args):
             return output_shapes
 
