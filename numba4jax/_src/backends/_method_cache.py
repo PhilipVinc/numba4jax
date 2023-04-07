@@ -6,7 +6,7 @@ __method_cache = {}
 
 
 def _get_backend_cache(backend):
-    if not backend in __method_cache:
+    if backend not in __method_cache:
         if _DEBUG:
             print(f"Initializing method cache for backend {backend}.")
 
@@ -18,7 +18,7 @@ def _get_backend_cache(backend):
 def _get_function_cache(backend, fun):
     __backend_cache = _get_backend_cache(backend)
 
-    if not fun in __backend_cache:
+    if fun not in __backend_cache:
         if _DEBUG:
             print(f"Initializing method cache ({backend}) for function {fun}.")
 
@@ -48,7 +48,7 @@ def get_custom_call_name(
 
     key = (input_shapes, input_dtypes, output_shapes, output_dtypes)
 
-    if not key in _method_cache:
+    if key not in _method_cache:
         if _DEBUG:
             print(f"Method ({numba_fn})[{key}] not found in cache. Compiling...")
 

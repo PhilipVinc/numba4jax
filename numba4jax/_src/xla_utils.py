@@ -1,5 +1,3 @@
-import jax
-
 from jax.abstract_arrays import ShapedArray
 
 from .c_api import pycapsule_new

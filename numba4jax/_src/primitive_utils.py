@@ -1,16 +1,10 @@
 import collections
-import ctypes
 from functools import partial  # pylint:disable=g-importing-member
-from textwrap import dedent
 
 import jax
-import jax.numpy as jnp
-from jax.interpreters import batching
 from jax.interpreters import xla
-from jax.lib import xla_client
 
 import numba
-from numba import types as nb_types
 import numpy as np
 
 from .config_flags import config
@@ -150,10 +144,10 @@ def njit4jax(output_shapes):
             of the output). This is necessary because jax/python can deduce the types of
             inputs when you call it, but it cannot infer the types of the output.
             `output_shapes` can be a function or a PyTree. If it is a pytree, it is
-            assumed that the function always returns objects of the same type, regardless
-            of the input types/shapes. If it is a function, it takes as input the
-            argument shapes and dtypes and should return the pytree of correct output
-            shapes of `jax.abstract_arrays.ShapedArray`.
+            assumed that the function always returns objects of the same type,
+            regardless of the input types/shapes. If it is a function, it takes as input
+            the argument shapes and dtypes and should return the pytree of correct
+            output shapes of `jax.abstract_arrays.ShapedArray`.
 
     Example:
         > from numba4jax import ShapedArray, njit4jax
@@ -167,7 +161,9 @@ def njit4jax(output_shapes):
     if callable(output_shapes):
         abstract_eval = output_shapes
     else:
-        abstract_eval = lambda *args: output_shapes
+
+        def abstract_eval(*args):
+            return output_shapes
 
     def decorator(fun):
         jitted_fun = numba.njit(fun)
