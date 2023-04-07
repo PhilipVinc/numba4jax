@@ -1,22 +1,94 @@
-# Setup and install configuration
-
-[dev-dependencies]
-black = { version = "^21.6b0", python = "^3.6" }
-pre-commit = ">= 2.7"
-pytest = ">= 6"
-pytest-xdist = ">= 2"
-flaky = ">= 3.7"
-coverage = ">= 5"
-pytest-cov = ">= 2.10.1"
-flakehell = ">= 0.9"
-
 [build-system]
-requires = ["setuptools>=50", 
-            "wheel", 
-            "toml",
-            "setuptools_scm[toml]>=3.4", 
-            "setuptools_scm_git_archive"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.8.0", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.setuptools_scm]
-write_to = "numba4jax/_version.py"
+[project]
+name = "numba4jax"
+description="Usa numba in jax-compiled kernels."
+authors=[
+    {name = "Filippo Vicentini", email = "filippovicentini@gmail.com"},
+]
+license = {text= "MIT"}
+readme = "README.md"
+keywords = ["Numba",
+            "Jax",
+            "jit",
+            "compile",
+            "kernel"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Unix",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.7"
+dependencies = [
+    "numpy~=1.18",
+    "numba>=0.52, <0.58",
+    "cffi>=1.12",
+    "jax>0.3, <0.5",
+    "jaxlib>0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6",
+    "coverage>=5",
+    "pytest-cov>=2.10.1",
+    "networkx~=2.4",
+    "flaky>=3.7",
+    "pre-commit",
+    "black==22.10.0",
+    "flakehell>=0.9",
+    "wheel",
+    "build",
+    ]
+
+[project.urls]
+ homepage = "http://github.com/PhilipVinc/numba4jax"
+ repository = "http://github.com/PhilipVinc/numba4jax"
+
+[tool.hatch.build]
+include = ["numba4jax*"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "numba4jax/_version.py"
+
+# Development tools
+
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38', 'py39']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+addopts = "--color=yes --verbose --durations=100 --tb=short"
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL NUMBER"
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore:No GPU/TPU found, falling back to CPU.:UserWarning",
+]
+testpaths = [
+    "tests",
+]
