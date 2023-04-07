@@ -1,5 +1,3 @@
-from functools import partial
-from textwrap import dedent
 
 from jax.lib import xla_client
 
@@ -29,13 +27,10 @@ def compile_gpu_signature(
     Compiles numba_fn to C and register it with XLA for the given signature.
     """
     from ._cuda import (
-        cuMemcpy,
         cuMemcpyAsync,
         cuStreamSynchronize,
-        memcpyHostToHost,
         memcpyHostToDevice,
         memcpyDeviceToHost,
-        memcpyDeviceToDevice,
     )
 
     n_in = len(input_shapes)

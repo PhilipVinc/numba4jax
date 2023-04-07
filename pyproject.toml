@@ -42,7 +42,7 @@ dev = [
     "flaky>=3.7",
     "pre-commit",
     "black==22.10.0",
-    "flakehell>=0.9",
+    "ruff>=0.0.261",
     "wheel",
     "build",
     ]
@@ -91,3 +91,20 @@ filterwarnings = [
 testpaths = [
     "tests",
 ]
+
+[tool.ruff]
+src = ["numba4jax"]
+select = ["E", "F"]
+fixable = ["E", "F"]
+target-version = "py37"
+
+# Same as Black.
+line-length = 88
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+
+

@@ -1,4 +1,3 @@
-from functools import partial
 
 from jax.lib import xla_client
 

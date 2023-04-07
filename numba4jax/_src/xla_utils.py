@@ -1,4 +1,3 @@
-import jax
 
 from jax.abstract_arrays import ShapedArray
 

@@ -27,7 +27,7 @@ if numba_cffi_loaded:
     ffi = FFI()
     ffi.cdef("int cuMemcpy(void* dst, void* src, unsigned int len, int type);")
     ffi.cdef(
-        "int cuMemcpyAsync(void* dst, void* src, unsigned int len, int type, void* stream);"
+        "int cuMemcpyAsync(void* dst, void* src, unsigned int len, int type, void* stream);"  # noqa: E501
     )
     ffi.cdef("int cuStreamSynchronize(void* stream);")
 

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-from textwrap import dedent
 
 
 def bool_env(varname: str, default: bool) -> bool:
