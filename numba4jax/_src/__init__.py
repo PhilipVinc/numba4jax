@@ -43,8 +43,8 @@ For example, for the above function, the corresponding abstract eval function is
 def add_and_mul_shape_fn(input_1, input_2, input_3):
   assert input_1.shape == input_2.shape
   assert input_1.shape == input_3.shape
-  return (jax.abstract_arrays.ShapedArray(input_1.shape, input_1.dtype),
-          jax.abstract_arrays.ShapedArray(input_1.shape, input_1.dtype))
+  return (jax.core.ShapedArray(input_1.shape, input_1.dtype),
+          jax.core.ShapedArray(input_1.shape, input_1.dtype))
 ```
 
 # Conversion

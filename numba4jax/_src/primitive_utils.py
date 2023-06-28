@@ -147,7 +147,7 @@ def njit4jax(output_shapes):
             assumed that the function always returns objects of the same type,
             regardless of the input types/shapes. If it is a function, it takes as input
             the argument shapes and dtypes and should return the pytree of correct
-            output shapes of `jax.abstract_arrays.ShapedArray`.
+            output shapes of `jax.core.ShapedArray`.
 
     Example:
         > from numba4jax import ShapedArray, njit4jax
