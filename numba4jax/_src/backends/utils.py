@@ -1,5 +1,6 @@
-import jaxlib.mlir.ir as ir
 from jax.interpreters.mlir import token_type
+
+import jaxlib.mlir.ir as ir
 
 
 def get_default_layouts(operands, order="c"):

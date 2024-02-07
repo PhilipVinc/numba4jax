@@ -1,4 +1,4 @@
-from ..config_flags import config
+from numba4jax._src import config
 
 _DEBUG = config.FLAGS["NUMBA4JAX_DEBUG"]
 

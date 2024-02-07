@@ -1,12 +1,12 @@
-from jax.lib import xla_client
-
 import numba
 from numba import types as nb_types
+
 import numpy as np
 
-from numba4jax._src import xla_utils
+from jax.lib import xla_client
 
-from ..config_flags import config
+from numba4jax._src import xla_utils
+from numba4jax._src import config
 
 from . import _cuda as cuda
 from ._method_cache import get_custom_call_name

@@ -1,9 +1,10 @@
 import sys
 
+from numba import types as nb_types
 from numba import cuda as ncuda
+
 from cffi import FFI
 
-from numba import types as nb_types
 
 try:
     _libcuda = ncuda.driver.find_driver()

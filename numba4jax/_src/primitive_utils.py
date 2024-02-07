@@ -1,15 +1,15 @@
 import collections
 from functools import partial  # pylint:disable=g-importing-member
 
-import jax
-from jax.interpreters import mlir
-
 import numba
 import numpy as np
 
-from .config_flags import config
-from . import xla_utils
-from . import backends
+import jax
+from jax.interpreters import mlir
+
+from numba4jax._src.config_flags import config
+from numba4jax._src import xla_utils
+from numba4jax._src import backends
 
 
 def abstract_eval_rule(abstract_eval_fn, *args, **kwargs):

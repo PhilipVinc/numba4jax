@@ -1,18 +1,16 @@
-from jax.lib import xla_client
-
 import numba
 from numba import types as nb_types
 
-from numba4jax._src import xla_utils
+from jax.interpreters import mlir
+from jax.interpreters.mlir import custom_call  # noqa: F401
+from jax.lib import xla_client
 
 import jaxlib.mlir.ir as ir
 
-from jax.interpreters import mlir
-from jax.interpreters.mlir import custom_call  # noqa: F401
+from numba4jax._src import config
+from numba4jax._src import xla_utils
 
-from ..config_flags import config
 from .utils import get_default_layouts
-
 from ._method_cache import get_custom_call_name
 
 
