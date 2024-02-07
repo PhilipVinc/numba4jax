@@ -1,15 +1,15 @@
 import collections
 from functools import partial  # pylint:disable=g-importing-member
 
-import jax
-from jax.interpreters import xla
-
 import numba
 import numpy as np
 
-from .config_flags import config
-from . import xla_utils
-from . import backends
+import jax
+from jax.interpreters import mlir
+
+from numba4jax._src.config_flags import config
+from numba4jax._src import xla_utils
+from numba4jax._src import backends
 
 
 def abstract_eval_rule(abstract_eval_fn, *args, **kwargs):
@@ -124,12 +124,16 @@ def numba_to_jax(name: str, numba_fn, abstract_eval_fn, batching_fn=None):
     #    )
     # batching.defvectorized(primitive)
 
-    xla.backend_specific_translations["cpu"][primitive] = partial(
-        backends.cpu.xla_encode, numba_fn, abstract_eval
+    # assign to the primitive the correct encoder
+    mlir.register_lowering(
+        primitive,
+        partial(backends.cpu.xla_encode, numba_fn, abstract_eval),
+        platform="cpu",
     )
-
-    xla.backend_specific_translations["gpu"][primitive] = partial(
-        backends.gpu.xla_encode, numba_fn, abstract_eval
+    mlir.register_lowering(
+        primitive,
+        partial(backends.gpu.xla_encode, numba_fn, abstract_eval),
+        platform="cuda",
     )
 
     return bind_primitive_fn

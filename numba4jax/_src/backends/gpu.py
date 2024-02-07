@@ -1,14 +1,19 @@
-from jax.lib import xla_client
-
 import numba
 from numba import types as nb_types
+
 import numpy as np
 
-from numba4jax._src import xla_utils
+from jax.interpreters import mlir
+from jax.interpreters.mlir import custom_call  # noqa: F401
+from jax.lib import xla_client
 
-from ..config_flags import config
+import jaxlib.mlir.ir as ir
+
+from numba4jax._src import xla_utils
+from numba4jax._src import config
 
 from . import _cuda as cuda
+from .utils import get_default_layouts
 from ._method_cache import get_custom_call_name
 
 xla_call_sig = nb_types.void(
@@ -221,46 +226,43 @@ def compile_gpu_signature(
     return target_name
 
 
-def xla_encode(numba_fn, abstract_eval_fn, xla_builder, *args):
+def xla_encode(numba_fn, abstract_eval_fn, ctx, *args):
     if not cuda.numba_cffi_loaded:
         raise RuntimeError("Numba cffi could not be loaded.")
 
     if config.FLAGS["NUMBA4JAX_DEBUG"]:
         print("Encoding the GPU variant of numba4jax function")
 
-    input_shapes = [xla_builder.get_shape(arg) for arg in args]
-    input_dtypes = tuple(shape.element_type() for shape in input_shapes)
-    input_dimensions = tuple(shape.dimensions() for shape in input_shapes)
+    inputs_avals = ctx.avals_in
+    input_shapes = tuple(arg.shape for arg in inputs_avals)
+    input_dtypes = tuple(arg.dtype for arg in inputs_avals)
 
     # TODO(josipd): Check that the input layout is the numpy default.
-    output_abstract_arrays = abstract_eval_fn(
-        *[xla_utils.xla_shape_to_abstract(shape) for shape in input_shapes]
-    )
+    output_abstract_arrays = abstract_eval_fn(*inputs_avals)
+
     output_shapes = tuple(array.shape for array in output_abstract_arrays)
     output_dtypes = tuple(array.dtype for array in output_abstract_arrays)
-
-    output_layouts = map(lambda shape: range(len(shape) - 1, -1, -1), output_shapes)
-
-    xla_output_shapes = [
-        xla_client.Shape.array_shape(*arg)
-        for arg in zip(output_dtypes, output_shapes, output_layouts)
+    output_types = [
+        ir.RankedTensorType.get(o.shape, mlir.dtype_to_ir_type(o.dtype))
+        for o in output_abstract_arrays
     ]
-    xla_output_shape = xla_client.Shape.tuple_shape(xla_output_shapes)
 
     target_name = get_custom_call_name(
         "gpu",
         numba_fn,
-        input_shapes=input_dimensions,
+        input_shapes=input_shapes,
         input_dtypes=input_dtypes,
         output_shapes=output_shapes,
         output_dtypes=output_dtypes,
         compile_fun=compile_gpu_signature,
     )
 
-    return xla_client.ops.CustomCallWithLayout(
-        xla_builder,
+    return custom_call(
         target_name,
+        result_types=output_types,
         operands=args,
-        shape_with_layout=xla_output_shape,
-        operand_shapes_with_layout=input_shapes,
-    )
+        # layout matters here, because the first axis is special
+        operand_layouts=get_default_layouts(args),
+        result_layouts=get_default_layouts(output_types),
+        has_side_effect=False,
+    ).results
