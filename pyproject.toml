@@ -29,7 +29,7 @@ requires-python = ">=3.9"
 dependencies = [
     "numpy~=1.21",
     "numba>=0.53, <0.60",
-    "cffi>=1.12",
+    "cffi>=1.14.4",
     "jax>=0.4.1, <0.4.24",
     "jaxlib>=0.4.1, <0.4.24",
 ]
