@@ -2,7 +2,7 @@ import collections
 from functools import partial  # pylint:disable=g-importing-member
 
 import jax
-from jax.interpreters import xla
+from jax.interpreters import mlir
 
 import numba
 import numpy as np
@@ -124,12 +124,16 @@ def numba_to_jax(name: str, numba_fn, abstract_eval_fn, batching_fn=None):
     #    )
     # batching.defvectorized(primitive)
 
-    xla.backend_specific_translations["cpu"][primitive] = partial(
-        backends.cpu.xla_encode, numba_fn, abstract_eval
+    # assign to the primitive the correct encoder
+    mlir.register_lowering(
+        primitive,
+        partial(backends.cpu.xla_encode, numba_fn, abstract_eval),
+        platform="cpu",
     )
-
-    xla.backend_specific_translations["gpu"][primitive] = partial(
-        backends.gpu.xla_encode, numba_fn, abstract_eval
+    mlir.register_lowering(
+        primitive,
+        partial(backends.gpu.xla_encode, numba_fn, abstract_eval),
+        platform="cuda",
     )
 
     return bind_primitive_fn

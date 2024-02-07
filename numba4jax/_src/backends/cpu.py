@@ -5,15 +5,35 @@ from numba import types as nb_types
 
 from numba4jax._src import xla_utils
 
+import jaxlib.mlir.ir as ir
+
+from jax.interpreters import mlir
+from jax.interpreters.mlir import custom_call  # noqa: F401
+
 from ..config_flags import config
+from .utils import get_default_layouts
 
 from ._method_cache import get_custom_call_name
 
 
-xla_call_sig = nb_types.void(
-    nb_types.CPointer(nb_types.voidptr),  # output_ptrs
-    nb_types.CPointer(nb_types.voidptr),  # input_ptrs
-)
+def get_xla_call_signature(n_out):
+    """
+    See https://github.com/dfm/extending-jax
+
+    It is documented that if there is a single output, it is directly passed as a single
+    pointer, while if there are multiple outputs, we get out a tuple of pointers.
+    """
+    if n_out == 1:
+        xla_call_sig = nb_types.void(
+            nb_types.voidptr,  # output_ptrs
+            nb_types.CPointer(nb_types.voidptr),  # input_ptrs
+        )
+    else:
+        xla_call_sig = nb_types.void(
+            nb_types.CPointer(nb_types.voidptr),  # output_ptrs
+            nb_types.CPointer(nb_types.voidptr),  # input_ptrs
+        )
+    return xla_call_sig
 
 
 def create_numba_api_wrapper(
@@ -40,14 +60,15 @@ def create_numba_api_wrapper(
             "n_out ∈ [1,4] outputs are supported ({n_out} detected)."
             "Please open a bug report."
         )
+    xla_call_signature = get_xla_call_signature(n_out)
 
-    @numba.cfunc(xla_call_sig)
+    @numba.cfunc(xla_call_signature)
     def xla_cpu_custom_call_target(output_ptrs, input_ptrs):
         # manually unroll input and output args because numba is
         # relatively dummb and cannot always infer getitem on inhomogeneous tuples
         if n_out == 1:
             args_out = (
-                numba.carray(output_ptrs[0], output_shapes[0], dtype=output_dtypes[0]),
+                numba.carray(output_ptrs, output_shapes[0], dtype=output_dtypes[0]),
             )
         elif n_out == 2:
             args_out = (
@@ -126,7 +147,7 @@ def compile_cpu_signature(
     return target_name
 
 
-def xla_encode(numba_fn, abstract_eval_fn, xla_builder, *args):
+def xla_encode(numba_fn, abstract_eval_fn, ctx, *args):
     """Returns the XLA CustomCall for the given numba function.
 
     Args:
@@ -141,40 +162,36 @@ def xla_encode(numba_fn, abstract_eval_fn, xla_builder, *args):
     if config.FLAGS["NUMBA4JAX_DEBUG"]:
         print("Encoding the CPU variant of numba4jax function")
 
-    input_shapes = [xla_builder.get_shape(arg) for arg in args]
-    input_dtypes = tuple(shape.element_type() for shape in input_shapes)
-    input_dimensions = tuple(shape.dimensions() for shape in input_shapes)
+    inputs_avals = ctx.avals_in
+    input_shapes = tuple(arg.shape for arg in inputs_avals)
+    input_dtypes = tuple(arg.dtype for arg in inputs_avals)
 
     # TODO(josipd): Check that the input layout is the numpy default.
-    output_abstract_arrays = abstract_eval_fn(
-        *tuple(xla_utils.xla_shape_to_abstract(shape) for shape in input_shapes)
-    )
+    output_abstract_arrays = abstract_eval_fn(*inputs_avals)
 
     output_shapes = tuple(array.shape for array in output_abstract_arrays)
     output_dtypes = tuple(array.dtype for array in output_abstract_arrays)
-
-    output_layouts = map(lambda shape: range(len(shape) - 1, -1, -1), output_shapes)
-
-    xla_output_shapes = [
-        xla_client.Shape.array_shape(*arg)
-        for arg in zip(output_dtypes, output_shapes, output_layouts)
+    output_types = [
+        ir.RankedTensorType.get(o.shape, mlir.dtype_to_ir_type(o.dtype))
+        for o in output_abstract_arrays
     ]
-    xla_output_shape = xla_client.Shape.tuple_shape(xla_output_shapes)
 
     target_name = get_custom_call_name(
         "cpu",
         numba_fn,
-        input_shapes=input_dimensions,
+        input_shapes=input_shapes,
         input_dtypes=input_dtypes,
         output_shapes=output_shapes,
         output_dtypes=output_dtypes,
         compile_fun=compile_cpu_signature,
     )
 
-    return xla_client.ops.CustomCallWithLayout(
-        xla_builder,
+    return custom_call(
         target_name,
+        result_types=output_types,
         operands=args,
-        shape_with_layout=xla_output_shape,
-        operand_shapes_with_layout=input_shapes,
-    )
+        # layout matters here, because the first axis is special
+        operand_layouts=get_default_layouts(args),
+        result_layouts=get_default_layouts(output_types),
+        has_side_effect=False,
+    ).results
