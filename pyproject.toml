@@ -31,6 +31,7 @@ dependencies = [
     "numba>=0.52, <0.60",
     "cffi>=1.12",
     "jax>0.3, <0.4.24",
+    "jaxlib>0.3, <0.4.24",
     "jaxlib>0.3",
 ]
 
