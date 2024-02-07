@@ -55,15 +55,10 @@ jobs:
           pip install --upgrade -r oldest_requirements.txt
           pip install -e ".[dev]"
 
-      - name: Install jaxlib for Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          pip install jaxlib -f https://whls.blob.core.windows.net/unstable/index.html
-
       - name: Install numba4jax
         if: ${{ ! matrix.oldest_deps }}
         run: |
-          pip install -e .[dev]
+          pip install -e '.[dev]'
 
       - name: Numba4jax tests
         run: |
