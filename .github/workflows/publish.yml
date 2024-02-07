@@ -13,6 +13,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       # make sure tags are fetched so we can get a version
       - run: |
@@ -29,11 +31,9 @@ jobs:
           python -m pip install --upgrade build
           pip install -U build twine 
 
-      - name: Build and publish
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
+      - name: Build
         run: |
           python -m build
-          twine upload dist/*
+      
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
