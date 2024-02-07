@@ -25,14 +25,13 @@ classifiers = [
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dependencies = [
-    "numpy~=1.18",
-    "numba>=0.52, <0.60",
-    "cffi>=1.12",
-    "jax>0.3, <0.4.24",
-    "jaxlib>0.3, <0.4.24",
-    "jaxlib>0.3",
+    "numpy~=1.21",
+    "numba>=0.53, <0.60",
+    "cffi>=1.14.4",
+    "jax>=0.4.1, <0.4.24",
+    "jaxlib>=0.4.1, <0.4.24",
 ]
 
 [project.optional-dependencies]
