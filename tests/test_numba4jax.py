@@ -41,14 +41,14 @@ def test_tworeturn():
         y2[:] = x2[:] + 1
 
     z1 = jnp.ones((1, 2), dtype=float)
-    z2 = jnp.ones((1, 2), dtype=float)*10
+    z2 = jnp.ones((1, 2), dtype=float) * 10
     out1, out2 = test(z1, z2)
     out1_jit, out2_jit = jax.jit(test)(z1, z2)
     np.testing.assert_allclose(out1, out1_jit)
     np.testing.assert_allclose(out2, out2_jit)
 
     z1 = jnp.ones((2, 3, 2), dtype=float)
-    z2 = jnp.ones((2, 3, 2), dtype=float)*10
+    z2 = jnp.ones((2, 3, 2), dtype=float) * 10
     out1, out2 = test(z1, z2)
     out1_jit, out2_jit = jax.jit(test)(z1, z2)
     np.testing.assert_allclose(out1, out1_jit)
