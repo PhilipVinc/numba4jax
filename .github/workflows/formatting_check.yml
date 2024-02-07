@@ -51,4 +51,4 @@ jobs:
         with:
           version: 0.2.1
           args: --config pyproject.toml
-          src: netket test Examples
+          src: numba4jax tests examples

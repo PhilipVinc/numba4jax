@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 
-from numba4jax import ShapedArray, njit4jax
+from numba4jax import njit4jax
 
 
 def compute_type(*x):
