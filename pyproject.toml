@@ -41,8 +41,8 @@ dev = [
     "pytest-cov>=2.10.1",
     "flaky>=3.7",
     "pre-commit",
-    "black==22.10.0",
-    "ruff>=0.0.261",
+    "black==24.1.1",
+    "ruff==0.2.1",
     "wheel",
     "build",
     ]
@@ -94,17 +94,18 @@ testpaths = [
 
 [tool.ruff]
 src = ["numba4jax"]
-select = ["E", "F"]
-fixable = ["E", "F"]
 target-version = "py37"
 
 # Same as Black.
 line-length = 88
 
+[tool.ruff.lint]
+fixable = ["E", "F"]
+select = ["E", "F"]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "F401"]
 
 
