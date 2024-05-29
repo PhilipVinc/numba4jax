@@ -42,7 +42,7 @@ dev = [
     "flaky>=3.7",
     "pre-commit",
     "black==24.1.1",
-    "ruff==0.3.5",
+    "ruff==0.4.6",
     "wheel",
     "build",
     ]
