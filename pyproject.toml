@@ -28,7 +28,7 @@ dynamic = ["version"]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.22,<3.0",
-    "numba>=0.53, <0.61",
+    "numba>=0.54, <0.61",
     "cffi>=1.14.4",
     "jax>=0.4.16, <0.5",
 ]
