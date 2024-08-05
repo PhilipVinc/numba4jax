@@ -94,7 +94,7 @@ testpaths = [
 
 [tool.ruff]
 src = ["numba4jax"]
-target-version = "py37"
+target-version = "py39"
 
 # Same as Black.
 line-length = 88

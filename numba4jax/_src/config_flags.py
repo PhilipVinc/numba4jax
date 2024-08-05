@@ -31,7 +31,9 @@ def bool_env(varname: str, default: bool) -> bool:
     elif val in ("n", "no", "f", "false", "off", "0"):
         return False
     else:
-        raise ValueError("invalid truth value %r for environment %r" % (val, varname))
+        raise ValueError(
+            "invalid truth value {!r} for environment {!r}".format(val, varname)
+        )
 
 
 def int_env(varname: str, default: int) -> int:
