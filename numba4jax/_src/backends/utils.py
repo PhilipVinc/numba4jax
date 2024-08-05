@@ -4,7 +4,7 @@ import jaxlib.mlir.ir as ir
 
 
 def get_default_layouts(operands, order="c"):
-    (token,) = token_type()
+    token = token_type()
     layouts = []
 
     if order == "c":
